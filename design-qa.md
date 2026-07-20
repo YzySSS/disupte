@@ -69,3 +69,25 @@
 - P3: exact glyph antialiasing may vary slightly between the video capture device and the desktop browser renderer.
 
 final result: passed
+
+## 2026-07-20 Mobile Webview Shell Regression
+
+- source visual truth: `C:\Users\YzyS\AppData\Local\Temp\codex-clipboard-da51a58a-f53b-4085-9f11-a3b342fcd698.jpg`
+- normalized side-by-side comparison: `D:\CodeX\XY\complaint-mobile-prototype\output\playwright\mobile-frame-comparison.png`
+- implementation screenshots:
+  - `D:\CodeX\XY\complaint-mobile-prototype\output\playwright\mobile-shell-fixed-390x844.png`
+  - `D:\CodeX\XY\complaint-mobile-prototype\output\playwright\mobile-shell-fixed-430x932.png`
+  - `D:\CodeX\XY\complaint-mobile-prototype\output\playwright\mobile-form-fixed-430x932.png`
+  - `D:\CodeX\XY\complaint-mobile-prototype\output\playwright\mobile-fraud-scroll-bottom-390x667.png`
+  - `D:\CodeX\XY\complaint-mobile-prototype\output\playwright\desktop-prototype-shell-1200x900.png`
+
+Findings and iteration:
+
+1. The real mobile host already renders close, title/domain, menu, and bottom navigation chrome. The implementation additionally rendered `BrowserHeader`, `PhoneHomeIndicator`, a 390px maximum-width surface, and a shadow, producing the visible nested frame.
+2. On mobile/coarse-pointer viewports, the simulated header and home indicator are now hidden, the page surface is full-width and full-height, and the shadow is removed. The document title is now `投诉`, so the native host no longer labels the page `Prototype`.
+3. The content stage now owns the full mobile viewport and scrolls vertically when a long secondary list exceeds the available height. At 390 x 667, the eleven-item fraud list measured 682px content over a 667px client area and successfully scrolled through the remaining 15px.
+4. At 390 x 844 and 430 x 932, document width exactly matched viewport width, shell left offset was 0, and both simulated chrome elements computed to `display: none`. No horizontal overflow was found.
+5. At 1200 x 900, the desktop prototype remained 390 x 844, centered at x=405, with the simulated header and home indicator still visible. This preserves the original desktop-preview behavior.
+6. The complaint route and optional-image behavior were rechecked after the responsive change: phone plus complaint content enabled Submit at 0/9 images. Console validation reported zero errors and zero warnings.
+
+final result: passed
