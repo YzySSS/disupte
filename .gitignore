@@ -1,0 +1,10 @@
+.env
+.env.*
+!.env.example
+
+node_modules/
+dist/
+.npm-cache/
+.playwright-cli/
+output/
+*.log
